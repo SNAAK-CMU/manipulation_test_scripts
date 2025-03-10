@@ -8,16 +8,23 @@ from frankapy import FrankaConstants as FC
 
 if __name__ == "__main__":
     fa = FrankaArm()
-    #fa.reset_joints()
+    fa.reset_joints()
     #print(fa.get_collision_boxes_poses())
     new_pose = RigidTransform()
     #new_pose.translation = np.array([0, 0, 0])
     orig_pose = fa.get_pose()
-    # new_pose = orig_pose.copy()
-    # new_pose.translation = [ 0.38507747, -0.24862385,  0.46716527]
-    # fa.goto_pose(new_pose)
-    print(orig_pose.translation)
-    print(orig_pose.rotation)
+    new_pose = orig_pose.copy()
+    new_pose.translation = [0.5635, -0.2434,  0.474]
+    fa.goto_pose(new_pose, use_impedance=False)
+    new_pose = orig_pose.copy()
+    new_pose.translation = [0.63, -0.302,  0.3]
+    fa.goto_pose(new_pose, duration=6, use_impedance=False)
+    new_pose = fa.get_pose()
+    new_pose.translation -= [0, 0, 0.2]
+    fa.goto_pose(new_pose, cartesian_impedances=[3000, 3000, 300, 300, 300, 300], use_impedance=False)
+    new_pose = fa.get_pose()
+    new_pose.translation += [0, 0, 0.2]
+    fa.goto_pose(new_pose, cartesian_impedances=[3000, 3000, 300, 300, 300, 300], use_impedance=False)
     #new_pose = orig_pose.copy()
     #new_pose.translation -= [0, 0, 0.275]
     #fa.goto_pose(new_pose, joint_impedances=[100, 100, 100, 100, 100, 100, 100])#, use_impedance=False)
