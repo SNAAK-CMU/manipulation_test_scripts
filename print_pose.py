@@ -43,7 +43,7 @@ if __name__ == "__main__":
     ------------------
         
         '''
-    fa.run_guide_mode(duration=600, block=False)
+    fa.run_guide_mode(duration=600000, block=False)
     WORKSPACE_WALLS = np.array([
         # sides
         [0.25, 0.55, 0.5, 0, 0, 0, 1.1, 0.01, 1.1],
@@ -84,4 +84,4 @@ if __name__ == "__main__":
         [0.43, -0.52, 0.125, 0, 0, 0, 0.68, 0.07, 0.26]
     ])
     while True:
-        print(fa.is_joints_in_collision_with_boxes(boxes=WORKSPACE_WALLS))
+        print(fa.get_pose().translation)
