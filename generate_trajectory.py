@@ -24,7 +24,8 @@ def generate_trajectory(start_pose, end_pose, args, fa, dt=0.01):
     q1 = fa.get_joints()
 
     fa.log_info('Visiting Pose 2')
-    fa.goto_pose(end_pose, use_impedance=False)
+    fa.goto_pose(end_pose, use_impedance=False, duration=5)
+    
     q2 = fa.get_joints()
     ts = np.arange(0, args.time, dt)
 
@@ -40,24 +41,31 @@ def generate_trajectory(start_pose, end_pose, args, fa, dt=0.01):
 if __name__ == "__main__":
     fa = FrankaArm()
     parser = argparse.ArgumentParser()
-    parser.add_argument('--time', '-t', type=float, default=5)
-    parser.add_argument('--file', '-f', default='bin32assembly.pkl') #filename to save generated trajectory
+    parser.add_argument('--time', '-t', type=float, default=3)
+    parser.add_argument('--file', '-f', default='assembly2bin4.pkl') #filename to save generated trajectory
     args = parser.parse_args()
 
     # before anything, reset joints to home position
-    #fa.reset_joints()
+    fa.reset_joints()
+
+    home_pose = FC.HOME_POSE
+    start_pose = home_pose.copy()
+    start_pose.translation = [0.45931555, 0.0836659, 0.55068304]
+    # start_pose.rotation = np.matmul(start_pose.rotation, np.array([[0, 1, 0], [-1, 0, 0], [0, 0, 1]])) # add 90 degree rotation
+    
+    end_pose = home_pose.copy()
+    end_pose.translation = [0.21549992, 0.21637546, 0.48050308]
     
 
+    end_pose.rotation = np.matmul(end_pose.rotation, np.array([[0, 1, 0], [-1, 0, 0], [0, 0, 1]])) # add 90 degree rotation
+    # end_pose.rotation = np.matmul(end_pose.rotation, np.array([[-1, 0, 0], [0, -1, 0], [0, 0, 1]])) # add 180 degree rotation - DOES NOT WORK DUE TO LIMITS
 
-    # howto get current pose from arm
-    #fa.reset_joints()
-    pose = FC.HOME_POSE
-    start_pose = pose.copy()
-    end_pose = start_pose.copy()
-
-    start_pose.translation = [0.25766588, -0.2418791, 0.47701201]
-    end_pose.translation = [0.45895706, 0.08462167, 0.51798657]
-
+    
     generate_trajectory(start_pose, end_pose, args, fa)
 
+    # BIN LOCATIONS:
+    # Bin6: [0.61549992, 0.21637546, 0.48050308]
+    # Bin5: [0.41549992, 0.21637546, 0.48050308]
+    # Bin4: [0.21549992, 0.21637546, 0.48050308]
 
+    # ASSEMBLY LOCATION: [0.45931555, 0.0836659, 0.55068304]
