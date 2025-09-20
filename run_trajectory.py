@@ -30,10 +30,10 @@ def execute_trajectory(fa, joints_traj, T, dt):
 
     # Goto the first position in the trajectory.
     fa.log_info('Initializing Sensor Publisher')
-    fa.goto_joints(joints_traj[1], duration=T, dynamic=False, buffer_time=5) # go to initial pose
+    fa.goto_joints(joints_traj[1], duration=T + 2.0, dynamic=False, buffer_time=5) # go to initial pose - give it some extra time
     fa.log_info('Publishing joints trajectory...')
     # To ensure skill doesn't end before completing trajectory, make the buffer time much longer than needed
-    fa.goto_joints(joints_traj[1], duration=T, dynamic=True, buffer_time=1)
+    fa.goto_joints(joints_traj[1], duration=T, dynamic=True, buffer_time=5)
     init_time = fa.get_time()
     for i in range(2, len(joints_traj)):
         traj_gen_proto_msg = JointPositionSensorMessage(
@@ -78,7 +78,7 @@ def execute_trajectory(fa, joints_traj, T, dt):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--trajectory_pickle', '-t', type=str, #required=True,
-                        help='Path to trajectory (in pickle format) to replay.', default='home2bin3_verified.pkl')
+                        help='Path to trajectory (in pickle format) to replay.', default='assembly2bin4.pkl')
     args = parser.parse_args()
 
     print('Starting robot')
@@ -99,17 +99,20 @@ if __name__ == "__main__":
 
     T = float(skill_state_dict['time_since_skill_started'][-1])
     #dt = 0.01
-    dt = 0.01 # lower dt corresponds to faster movement
+    dt = 0.01 # higher dt - less timesteps - faster movement
     ts = np.arange(0, T, dt)
 
     #pose_traj = skill_state_dict['O_T_EE']
     joints_traj = skill_state_dict['q']
     execute_trajectory(fa, joints_traj, T, dt)
+    
+    # print pose
+    print(fa.get_pose().translation)
 
 
     # execute trajectory in reverse
-    joints_trav_rev = joints_traj[::-1]
-    execute_trajectory(fa, joints_trav_rev, T, dt)
+    # joints_trav_rev = joints_traj[::-1]
+    # execute_trajectory(fa, joints_trav_rev, T, dt)
     # execute_trajectory(fa, joints_traj)
 
     # test stuff
@@ -137,4 +140,4 @@ if __name__ == "__main__":
     # time.sleep(2)
 
     # execute_trajectory(fa, joints_traj)
-    fa.reset_joints()
+    # fa.reset_joints()
